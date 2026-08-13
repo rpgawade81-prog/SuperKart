@@ -11,7 +11,7 @@ from flask import Flask, request, jsonify
 app = Flask(__name__)
 
 # Load the model
-model = joblib.load('backend_files/xgb_tuned_model.joblib')
+model = joblib.load('xgb_tuned_model.joblib')
 
 @app.route('/')
 def home():
