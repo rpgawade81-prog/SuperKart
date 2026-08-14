@@ -22,17 +22,14 @@ def home():
 def predict():
     if request.method == 'POST':
         try:
-            # Get data from POST request
             data = request.get_json()
+            if not data:
+                return jsonify({'error': 'Request body must be JSON'}), 400
 
-            # Convert JSON data to a pandas DataFrame
             df = pd.DataFrame([data])
+            prediction = model.predict(df)[0]
 
-            # Make prediction
-            prediction = model.predict(df)
-
-            # Return the prediction as JSON
-            return jsonify({'prediction': prediction[0]})
+            return jsonify({'Prediction': float(prediction)})
 
         except Exception as e:
             return jsonify({'error': str(e)}), 400

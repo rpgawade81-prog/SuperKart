@@ -44,10 +44,10 @@ product_data = {
 }
 
 if st.button("Predict", type='primary'):
-    response = requests.post("http://localhost:5000/predict", json=product_data)    # Complete the code to enter user name and space name to correctly define the endpoint
+    response = requests.post("http://localhost:5000/predict", json=product_data)
     if response.status_code == 200:
         result = response.json()
-        predicted_sales = result["Prediction"]
-        st.write(f"Predicted Product Store Sales Total: ₹{predicted_sales:.2f}")
+        predicted_sales = result.get("Prediction", result.get("prediction"))
+        st.write(f"Predicted Product Store Sales Total: ₹{float(predicted_sales):.2f}")
     else:
-        st.error("Error in API request")
+        st.error(f"Error in API request: {response.text}")
