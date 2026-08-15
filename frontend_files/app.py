@@ -1,6 +1,10 @@
 
 import streamlit as st
 import requests
+import os
+
+# Get backend URL from environment variable or default to localhost
+BACKEND_URL = os.getenv("BACKEND_URL", "http://127.0.0.1:5000")
 
 st.title("Product Sales Prediction App") #Complete the code to define the title of the app.
 
@@ -44,10 +48,17 @@ product_data = {
 }
 
 if st.button("Predict", type='primary'):
-    response = requests.post("http://localhost:5000/predict", json=product_data)
-    if response.status_code == 200:
-        result = response.json()
-        predicted_sales = result.get("Prediction", result.get("prediction"))
-        st.write(f"Predicted Product Store Sales Total: ₹{float(predicted_sales):.2f}")
-    else:
-        st.error(f"Error in API request: {response.text}")
+    try:
+        response = requests.post(f"{BACKEND_URL}/predict", json=product_data, timeout=10)
+        if response.status_code == 200:
+            result = response.json()
+            predicted_sales = result.get("Prediction", result.get("prediction"))
+            st.success(f"Predicted Product Store Sales Total: ₹{float(predicted_sales):.2f}")
+        else:
+            st.error(f"Error in API request: {response.text}")
+    except requests.exceptions.ConnectionError:
+        st.error(f"Cannot connect to backend at {BACKEND_URL}. Please check if the API is running.")
+    except requests.exceptions.Timeout:
+        st.error("Request to backend timed out. Please try again.")
+    except Exception as e:
+        st.error(f"Error: {str(e)}")
